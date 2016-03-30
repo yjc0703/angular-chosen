@@ -1,6 +1,16 @@
 angular.module('localytics.directives', [])
 
-angular.module('localytics.directives').directive 'chosen', ['$timeout', ($timeout) ->
+angular.module('localytics.directives')
+.provider 'chosenConfig', () ->
+
+  this.options = {}
+  this.setOption = (o) -> this.options = o
+  this.$get = () -> this
+  return
+
+
+angular.module('localytics.directives')
+.directive 'chosen', ['$timeout', 'chosenConfig', ($timeout, chosenConfig) ->
 
   # This is stolen from Angular...
   NG_OPTIONS_REGEXP =  /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/
@@ -48,6 +58,16 @@ angular.module('localytics.directives').directive 'chosen', ['$timeout', ($timeo
 
     # Take a hash of options from the chosen directive
     options = scope.$eval(attr.chosen) or {}
+
+    # set provider options
+    angular.forEach chosenConfig.options, (value, key) ->
+      if key in CHOSEN_OPTION_WHITELIST
+
+        ((k, v) ->
+          options[snakeCase(k)] = v
+          return
+        )(key, value)
+        return
 
     # Options defined as attributes take precedence
     angular.forEach attr, (value, key) ->

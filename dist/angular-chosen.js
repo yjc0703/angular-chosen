@@ -9,8 +9,18 @@
 
   angular.module('localytics.directives', []);
 
+  angular.module('localytics.directives').provider('chosenConfig', function() {
+    this.options = {};
+    this.setOption = function(o) {
+      return this.options = o;
+    };
+    this.$get = function() {
+      return this;
+    };
+  });
+
   angular.module('localytics.directives').directive('chosen', [
-    '$timeout', function($timeout) {
+    '$timeout', 'chosenConfig', function($timeout, chosenConfig) {
       var CHOSEN_OPTION_WHITELIST, NG_OPTIONS_REGEXP, isEmpty, snakeCase;
       NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/;
       CHOSEN_OPTION_WHITELIST = ['persistentCreateOption', 'createOptionText', 'createOption', 'skipNoResults', 'noResultsText', 'allowSingleDeselect', 'disableSearchThreshold', 'disableSearch', 'enableSplitWordSearch', 'inheritSelectClasses', 'maxSelectedOptions', 'placeholderTextMultiple', 'placeholderTextSingle', 'searchContains', 'singleBackstrokeDelete', 'displayDisabledOptions', 'displaySelectedOptions', 'width', 'includeGroupLabelInSelected', 'maxShownResults'];
@@ -42,6 +52,13 @@
           element = $(element);
           element.addClass('localytics-chosen');
           options = scope.$eval(attr.chosen) || {};
+          angular.forEach(chosenConfig.options, function(value, key) {
+            if (indexOf.call(CHOSEN_OPTION_WHITELIST, key) >= 0) {
+              (function(k, v) {
+                options[snakeCase(k)] = v;
+              })(key, value);
+            }
+          });
           angular.forEach(attr, function(value, key) {
             if (indexOf.call(CHOSEN_OPTION_WHITELIST, key) >= 0) {
               return attr.$observe(key, function(value) {
