@@ -11,7 +11,7 @@
 
   angular.module('localytics.directives').provider('chosenConfig', function() {
     this.options = {};
-    this.setOption = function(o) {
+    this.setOptions = function(o) {
       return this.options = o;
     };
     this.$get = function() {

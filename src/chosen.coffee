@@ -4,7 +4,7 @@ angular.module('localytics.directives')
 .provider 'chosenConfig', () ->
 
   this.options = {}
-  this.setOption = (o) -> this.options = o
+  this.setOptions = (o) -> this.options = o
   this.$get = () -> this
   return
 
