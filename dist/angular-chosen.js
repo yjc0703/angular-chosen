@@ -55,7 +55,7 @@
           angular.forEach(chosenConfig.options, function(value, key) {
             if (indexOf.call(CHOSEN_OPTION_WHITELIST, key) >= 0) {
               (function(k, v) {
-                options[snakeCase(k)] = v;
+                options[snakeCase(k)] = scope.$eval(v);
               })(key, value);
             }
           });

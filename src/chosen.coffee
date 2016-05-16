@@ -62,9 +62,8 @@ angular.module('localytics.directives')
     # set provider options
     angular.forEach chosenConfig.options, (value, key) ->
       if key in CHOSEN_OPTION_WHITELIST
-
         ((k, v) ->
-          options[snakeCase(k)] = v
+          options[snakeCase(k)] = scope.$eval(v)
           return
         )(key, value)
         return
